@@ -1,7 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,53 @@ function Field({ id, label, children }: { id: string; label: string; children: R
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
       {children}
+    </div>
+  );
+}
+
+function PasswordInput({
+  id,
+  value,
+  onChange,
+  autoComplete,
+  minLength,
+  "data-testid": testId,
+}: {
+  id: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  autoComplete?: string;
+  minLength?: number;
+  "data-testid"?: string;
+}) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <div className="relative">
+      <Input
+        id={id}
+        type={visible ? "text" : "password"}
+        required
+        minLength={minLength}
+        value={value}
+        onChange={onChange}
+        autoComplete={autoComplete}
+        data-testid={testId}
+        className="pr-10"
+      />
+      <button
+        type="button"
+        onClick={() => setVisible((v) => !v)}
+        aria-label={visible ? "Hide password" : "Show password"}
+        tabIndex={-1}
+        className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 transition-colors hover:text-slate-700"
+      >
+        {visible ? (
+          <EyeOff className="size-4" strokeWidth={1.8} />
+        ) : (
+          <Eye className="size-4" strokeWidth={1.8} />
+        )}
+      </button>
     </div>
   );
 }
@@ -104,13 +151,11 @@ export default function AuthPage({ mode }: { mode: AuthMode }) {
             <Input id="email" type="email" required value={form.email} onChange={set("email")} autoComplete="email" data-testid={`${mode}-email-input`} />
           </Field>
           <Field id="password" label={mode === "register" ? "Password (min 6 characters)" : "Password"}>
-            <Input
+            <PasswordInput
               id="password"
-              type="password"
-              required
-              minLength={mode === "register" ? 6 : 1}
               value={form.password}
               onChange={set("password")}
+              minLength={mode === "register" ? 6 : 1}
               autoComplete={mode === "register" ? "new-password" : "current-password"}
               data-testid={`${mode}-password-input`}
             />
