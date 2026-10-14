@@ -1,6 +1,12 @@
-// Typed fetch layer over the FastAPI backend. Base is the relative "/api" prefix so the
-// same code works in dev (Vite proxies /api → :8001) and behind a single origin in prod.
-const BASE = "/api";
+// Typed fetch layer over the FastAPI backend.
+// In dev, Vite proxies /api → backend (:8000).
+// In prod on Vercel, VITE_API_URL points to the backend (e.g. https://ecommerce-websitev1-w69l.vercel.app).
+const rawBase = (import.meta.env.VITE_API_URL as string | undefined)?.trim().replace(/\/+$/, "");
+const BASE = rawBase
+  ? rawBase.endsWith("/api")
+    ? rawBase
+    : `${rawBase}/api`
+  : "/api";
 
 // Fields are declared, not constructor parameter properties: tsconfig sets
 // erasableSyntaxOnly, which rejects `constructor(readonly status: number)`.
@@ -19,11 +25,12 @@ export class ApiError extends Error {
 type JsonBody = unknown;
 
 async function request<T>(method: string, path: string, body?: JsonBody): Promise<T> {
-  // Auth rides the httpOnly session cookie automatically — never add auth headers here.
+  // Auth rides the httpOnly session cookie automatically — include credentials so cookies work across origins.
   const res = await fetch(`${BASE}${path}`, {
     method,
     headers: body === undefined ? undefined : { "Content-Type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
+    credentials: "include",
   });
 
   // FastAPI reports request-validation failures as 422 with a {detail: [...]} body.
