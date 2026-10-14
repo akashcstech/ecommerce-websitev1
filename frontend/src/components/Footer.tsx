@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import DownloadMainButton from "@/components/DownloadMainButton";
 
 export default function Footer() {
   return (
@@ -26,16 +25,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-slate-800">
-        <div className="mx-auto flex max-w-7xl flex-col items-start gap-5 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
-          <div>
-            <p className="font-heading text-lg font-semibold">Get the full source code</p>
-            <p className="text-sm text-slate-400" data-testid="download-main-txt-hint">
-              main.txt contains the root folder structure, then every file as FILE NAME → COPYPASTE → CODE -END.
-            </p>
-          </div>
-          <DownloadMainButton />
-        </div>
-        <p className="mx-auto max-w-7xl px-4 pb-8 text-xs text-slate-500 sm:px-6 lg:px-8">
+        <p className="mx-auto max-w-7xl px-4 py-8 text-xs text-slate-500 sm:px-6 lg:px-8">
           © {new Date().getFullYear()} Bazaarline. All rights reserved.
         </p>
       </div>
