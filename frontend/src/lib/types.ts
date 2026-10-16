@@ -27,6 +27,8 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  mrp?: number;          // MRP / original price for strikethrough display
+  offer_label?: string;  // e.g. "SALE", "20% OFF", "LIMITED"
   stock: number;
   image_url: string;
   created_at: string;
@@ -37,6 +39,8 @@ export interface ProductInput {
   name: string;
   description: string;
   price: number;
+  mrp?: number;
+  offer_label?: string;
   stock: number;
   image_url: string;
 }

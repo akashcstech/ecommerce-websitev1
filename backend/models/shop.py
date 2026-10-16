@@ -71,6 +71,8 @@ class Product(BaseModel):
     name: str
     description: str
     price: float
+    mrp: float | None = None          # MRP / original price (for strikethrough)
+    offer_label: str | None = None    # e.g. "SALE", "20% OFF", "LIMITED"
     stock: int
     image_url: str
     created_at: str
@@ -81,6 +83,8 @@ class ProductIn(BaseModel):
     name: str = Field(min_length=2, max_length=120)
     description: str = Field(default="", max_length=2000)
     price: float = Field(gt=0, le=10_000_000)
+    mrp: float | None = Field(default=None, gt=0, le=10_000_000)
+    offer_label: str | None = Field(default=None, max_length=30)
     stock: int = Field(ge=0, le=1_000_000)
     image_url: str = Field(min_length=1, max_length=1_500_000)  # URL or uploaded data: URL
 

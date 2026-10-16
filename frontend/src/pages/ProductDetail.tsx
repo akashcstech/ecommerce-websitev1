@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Loader2, Minus, Plus, ShieldCheck, Truck } from "lucide-react";
+import { ArrowLeft, Loader2, Minus, Plus, ShieldCheck, Truck, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StockBadge } from "@/components/Badges";
 import { useAddToCart } from "@/hooks/useShop";
@@ -9,6 +9,13 @@ import { apiGet } from "@/lib/api";
 import { inr } from "@/lib/format";
 import { getAssetImageUrl } from "@/lib/assets";
 import type { Product } from "@/lib/types";
+
+function OfferBadge({ label }: { label: string }) {
+  const base = "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold tracking-wide animate-pulse-slow";
+  if (label === "LIMITED") return <span className={`${base} bg-purple-100 text-purple-700 border border-purple-300`}><Zap className="size-3" />{label}</span>;
+  if (label === "SALE") return <span className={`${base} bg-rose-100 text-rose-600 border border-rose-300`}><Zap className="size-3" />{label}</span>;
+  return <span className={`${base} bg-orange-100 text-orange-700 border border-orange-300`}><Zap className="size-3" />{label}</span>;
+}
 
 export default function ProductDetail() {
   const { id = "" } = useParams();
@@ -61,10 +68,35 @@ export default function ProductDetail() {
               <h1 className="text-3xl font-semibold leading-tight sm:text-4xl" data-testid="product-detail-name">
                 {product.name}
               </h1>
-              <div className="flex items-center gap-4">
+
+              {/* ── Price block ── */}
+              <div className="flex flex-wrap items-center gap-3">
                 <span className="font-heading text-3xl font-semibold tabular-nums" data-testid="product-detail-price">
                   {inr(product.price)}
                 </span>
+                {product.mrp != null && product.mrp > product.price && (
+                  <span className="text-lg text-slate-400 line-through tabular-nums">
+                    {inr(product.mrp)}
+                  </span>
+                )}
+                {product.offer_label && <OfferBadge label={product.offer_label} />}
+              </div>
+
+              {/* Savings line */}
+              {product.mrp != null && product.mrp > product.price && (() => {
+                const savings = product.mrp - product.price;
+                const pct = Math.round((savings / product.mrp) * 100);
+                return (
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-sm font-semibold text-emerald-700 border border-emerald-200">
+                      {inr(savings)} off
+                    </span>
+                    <span className="text-sm text-slate-500">{pct}% savings on MRP</span>
+                  </div>
+                );
+              })()}
+
+              <div className="flex items-center gap-4">
                 <StockBadge stock={product.stock} testId="product-detail-stock" />
               </div>
               <p className="text-sm text-slate-500" data-testid="product-detail-stock-count">
