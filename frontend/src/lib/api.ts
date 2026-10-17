@@ -1,6 +1,5 @@
-// Typed fetch layer over the FastAPI backend.
-// In dev, Vite proxies /api → backend (:8000).
-// In prod on Vercel, VITE_API_URL points to the backend (e.g. https://ecommerce-websitev1-w69l.vercel.app).
+// Typed fetch layer over the local FastAPI backend.
+// Defaults to "/api", proxied by Vite to http://127.0.0.1:8000.
 const rawBase = (import.meta.env.VITE_API_URL as string | undefined)?.trim().replace(/\/+$/, "");
 const BASE = rawBase
   ? rawBase.endsWith("/api")
